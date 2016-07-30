@@ -11,12 +11,13 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 */
 
 require_once __DIR__ . '/inc/lkwd10s-event-post-type.php';
-//require_once __DIR__ . '/inc/lkwd10s-event-date-meta-box.php';
+require_once __DIR__ . '/inc/lkwd10s-teaching-pro-post-type.php';
 
 function lkwd10s_plugin_install() {
 
     // Register custom post types
     event_post_type();
+    teaching_pro_post_type();
 
     // Clear the permalinks after the post type has been registered
     flush_rewrite_rules();
