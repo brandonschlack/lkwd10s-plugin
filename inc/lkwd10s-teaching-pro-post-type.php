@@ -1,7 +1,10 @@
 <?php
 /**
- * Teaching Pro Post Type
- * Post Type
+ * Teaching Pro Post Type that defines a Teaching Pro for Lakewood Tennis Center.
+ *
+ * Registers the custom 'teaching_pro' post type
+ *
+ * @package: Lakewood_Tennis_Center_Plugin
  *
  */
 
@@ -67,3 +70,98 @@ add_action( 'init', 'teaching_pro_post_type', 0 );
  */
 
 // Register Custom Meta Box
+class Teaching_Pro_Meta_Box {
+
+	public function __construct() {
+
+		if ( is_admin() ) {
+			add_action( 'load-post.php',     array( $this, 'init_metabox' ) );
+			add_action( 'load-post-new.php', array( $this, 'init_metabox' ) );
+		}
+
+	}
+
+	public function init_metabox() {
+
+		add_action( 'add_meta_boxes',        array( $this, 'add_metabox' )         );
+		add_action( 'save_post',             array( $this, 'save_metabox' ), 10, 2 );
+
+
+	}
+
+	public function add_metabox() {
+
+		add_meta_box(
+			'teaching_pro',
+			'Portrait',
+			array( $this, 'render_metabox' ),
+			'teaching_pro',
+			'advanced',
+			'high'
+		);
+
+	}
+
+	public function render_metabox( $post ) {
+
+		// Add nonce for security and authentication.
+		wp_nonce_field( 'teaching_pro_nonce_action', 'teaching_pro_nonce' );
+
+		// Retrieve an existing value from the database.
+		$teaching_pro_portrait = get_post_meta( $post->ID, 'teaching_pro_portrait', true );
+
+		// Set default values.
+		if( empty( $teaching_pro_portrait ) ) $teaching_pro_portrait = '';
+
+		// Form fields.
+		echo '<table class="form-table">';
+
+		echo '	<tr>';
+		echo '		<th><label for="teaching_pro_portrait" class="teaching_pro_portrait_label">' . 'Portrait Image' . '</label></th>';
+		echo '		<td>';
+		echo '			<input type="url" id="teaching_pro_portrait" name="teaching_pro_portrait" class="teaching_pro_portrait_field" placeholder="' . 'Add Image' . '" value="' . esc_attr__( $teaching_pro_portrait ) . '">';
+		echo '			<p class="description">' . 'Add a portrait or logo' . '</p>';
+		echo '		</td>';
+		echo '	</tr>';
+
+		echo '</table>';
+
+	}
+
+	public function save_metabox( $post_id, $post ) {
+
+		// Add nonce for security and authentication.
+		$nonce_name   = isset( $_POST['teaching_pro_nonce'] ) ? $_POST['teaching_pro_nonce'] : '';
+		$nonce_action = 'teaching_pro_nonce_action';
+
+		// Check if a nonce is set.
+		if ( ! isset( $nonce_name ) )
+			return;
+
+		// Check if a nonce is valid.
+		if ( ! wp_verify_nonce( $nonce_name, $nonce_action ) )
+			return;
+
+		// Check if the user has permissions to save data.
+		if ( ! current_user_can( 'edit_post', $post_id ) )
+			return;
+
+		// Check if it's not an autosave.
+		if ( wp_is_post_autosave( $post_id ) )
+			return;
+
+		// Check if it's not a revision.
+		if ( wp_is_post_revision( $post_id ) )
+			return;
+
+		// Sanitize user input.
+		$teaching_pro_new_portrait = isset( $_POST[ 'teaching_pro_portrait' ] ) ? esc_url( $_POST[ 'teaching_pro_portrait' ] ) : '';
+
+		// Update the meta field in the database.
+		update_post_meta( $post_id, 'teaching_pro_portrait', $teaching_pro_new_portrait );
+
+	}
+
+}
+
+new Teaching_Pro_Meta_Box;

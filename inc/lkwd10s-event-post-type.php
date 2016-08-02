@@ -1,11 +1,18 @@
 <?php
 /**
- * Event Post Type
- * Post Type
+ * Event Post Type that defines an Event for Lakewood Tennis Center.
+ *
+ * Registers the custom 'event' post type, event type taxonomy,
+ * and meta boxes for event date and tournament info.
+ *
+ * @package: Lakewood_Tennis_Center_Plugin
  *
  */
 
-// Register Custom Post Type
+/**
+ * Register the custom post type 'event'.
+ *
+ */
 function event_post_type() {
 
 	$labels = array(
@@ -61,13 +68,6 @@ function event_post_type() {
 add_action( 'init', 'event_post_type', 0 );
 
 
-/**
- * Event Types
- * Custom Taxonomy
- *
- */
-
-// Register Custom Taxonomy
 function event_type_taxonomy() {
 
 	$labels = array(
@@ -227,8 +227,6 @@ new Event_Date_Meta_Box;
  * Meta Box
  *
  */
-
-// Register Custom Meta Box
 class Event_Tourn_Meta_Box {
 
 	public function __construct() {
